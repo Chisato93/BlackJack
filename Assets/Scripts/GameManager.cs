@@ -18,21 +18,14 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    public GameController controller;
-
     #region 임시테스트
     public List<GameObject> Flows;
 
-    private void Start()
-    {
-        controller = Instantiate(controller).GetComponent<GameController>();
-    }
 
     public void NextTurn()
     {
-        controller.Flow++;
-        int overFlowCheck = (int)controller.Flow % (int)GameFlow.TOTAL;
-        controller.Flow = (GameFlow)(overFlowCheck);
+        int overFlowCheck = (int)GameController.instance.Flow % (int)GameFlow.TOTAL;
+        GameController.instance.Flow = (GameFlow)(overFlowCheck);
 
         if (overFlowCheck - 1 < 0)
         {

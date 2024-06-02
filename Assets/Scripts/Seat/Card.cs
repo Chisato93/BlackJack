@@ -4,7 +4,7 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     CardShape card_Shape;
-    int card_Number;
+    public int card_Number { get; private set; }
     bool isSelected = false;
     public bool IsPlayerCard { get; set; } = false;
 
