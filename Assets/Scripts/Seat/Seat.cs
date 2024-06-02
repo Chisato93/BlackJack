@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sit : MonoBehaviour
+public class Seat : MonoBehaviour
 {
     public bool isEmptySeat = false;
     public int Bet_Amount { get; set; }
