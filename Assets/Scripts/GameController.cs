@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -36,7 +37,7 @@ public class GameController : MonoBehaviour
                 Init();
                 break;
             case GameFlow.BETTING:
-                BettingTurn();
+                StartCoroutine(BettingTurn());
                 break;
             case GameFlow.CARD_DISTRIBUTION:
                 break;
@@ -50,15 +51,14 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void BettingTurn()
+    private IEnumerator BettingTurn()
     {
         Seats seatList = FindObjectOfType<Seats>();
-        foreach(PlayerSeat seat in seatList.seats)
+        foreach (PlayerSeat seat in seatList.seats)
         {
-            if(!seat.isEmptySeat)
+            if (!seat.isEmptySeat)
             {
-                // ui로 얼마 배팅할건지 선택
-                // 그 금액을 seat의 betamount에 넣음.
+                yield return StartCoroutine(seat.SetBettingAmount());
             }
         }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class UIController : MonoBehaviour
 {
@@ -17,9 +18,21 @@ public class UIController : MonoBehaviour
     }
 
     public GameObject BettingPanel;
+    public UnityEvent onBettingCompleted;
+    private PlayerSeat currentPlayerSeat;
 
     public void TurnOnBettingPanel(bool isActive)
     {
         BettingPanel.SetActive(isActive);
+    }
+
+    public void SetPlayerSeat(PlayerSeat curPlayerSeat)
+    {
+        currentPlayerSeat = curPlayerSeat;
+    }
+
+    public PlayerSeat GetCurrentPlayerSeat()
+    {
+        return currentPlayerSeat;
     }
 }

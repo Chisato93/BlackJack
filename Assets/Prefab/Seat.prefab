@@ -200,6 +200,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4441656499281084096}
+  - component: {fileID: 4981597408871861421}
   m_Layer: 0
   m_Name: Seat
   m_TagString: Untagged
@@ -224,6 +225,26 @@ Transform:
   - {fileID: 3850415542450096006}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4981597408871861421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8202488335526279823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a87e72bfff1c5e4f9c0f0f59a6010c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isEmptySeat: 1
+  chips:
+  - {fileID: 6704058567114982939, guid: 2b06956c46b0c1d4b92286f470a38462, type: 3}
+  - {fileID: 6704058567114982939, guid: 75e505e91b212b54386db9c4f8437175, type: 3}
+  - {fileID: 6704058567114982939, guid: e42242142db731b4895402b24258b777, type: 3}
+  - {fileID: 8947752950716321821, guid: 3b7fd375226f3ce438184bbd681b67d1, type: 3}
+  - {fileID: 4758771737456098294, guid: dfdbd0003676533429e1a2da8563a50d, type: 3}
+  - {fileID: 204430026767780912, guid: 2182c7e1f0aa60e4590540b85b7a69d8, type: 3}
 --- !u!1001 &2055309092500819644
 PrefabInstance:
   m_ObjectHideFlags: 0

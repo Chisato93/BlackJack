@@ -4,6 +4,4 @@ using UnityEngine;
 public class Seats : MonoBehaviour
 {
     public List<Seat> seats;
-
-
 }
