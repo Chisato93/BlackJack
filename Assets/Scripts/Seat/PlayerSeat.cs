@@ -9,7 +9,7 @@ public class PlayerSeat : Seat
     public int Bet_Amount { get; set; }
 
     public List<GameObject> chips;
-    private float lerp_Speed = .5f;
+    private float lerp_Speed = .05f;
 
     public IEnumerator SetBettingAmount()
     {
@@ -53,20 +53,20 @@ public class PlayerSeat : Seat
 
         GameObject chip = Instantiate(chips[index], this.transform);
         
-        Vector3 originalPos = transform.localPosition;
-        Vector3 targetTransform = FindObjectOfType<DealerSeat>().transform.localPosition;
+        Vector3 originalPos = chip.transform.localPosition;
+        Vector3 targetTransform = FindObjectOfType<DealerSeat>().transform.position;
         Vector3 targetDir = (targetTransform - transform.localPosition).normalized;
         Vector3 targetPos = originalPos + targetDir;
 
         float dist = Vector3.Distance(originalPos, targetPos);
         while (dist >= .1f)
         {
-            transform.localPosition = Vector3.Lerp(originalPos, targetPos, lerp_Speed);
+            chip.transform.localPosition = Vector3.Lerp(originalPos, targetPos, lerp_Speed);
             yield return null;
         }
 
         // Ensure chip is at the target position
-        transform.localPosition = targetPos;
+        chip.transform.localPosition = targetPos;
     }
 
 }
