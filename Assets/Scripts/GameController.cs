@@ -15,12 +15,14 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        dealerSeat = FindObjectOfType<DealerSeat>();
         Init();
     }
-
+    DealerSeat? dealerSeat;
     private void Init()
     {
         Flow = GameFlow.SELECT_SEAT;
+        dealerSeat.SetActiveDummyCard(true);
         UIController.instance.TurnOnReadyButton(true);
     }
 
@@ -37,6 +39,7 @@ public class GameController : MonoBehaviour
                 Init();
                 break;
             case GameFlow.BETTING:
+                dealerSeat.SetActiveDummyCard(false);
                 StartCoroutine(BettingTurn());
                 break;
             case GameFlow.CARD_DISTRIBUTION:

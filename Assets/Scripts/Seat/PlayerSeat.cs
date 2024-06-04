@@ -52,9 +52,11 @@ public class PlayerSeat : Seat
         }
 
         GameObject chip = Instantiate(chips[index], this.transform);
-
+        
         Vector3 originalPos = transform.localPosition;
-        Vector3 targetPos = originalPos + new Vector3(0, 0, 0.3f);
+        Vector3 targetTransform = FindObjectOfType<DealerSeat>().transform.localPosition;
+        Vector3 targetDir = (targetTransform - transform.localPosition).normalized;
+        Vector3 targetPos = originalPos + targetDir;
 
         float dist = Vector3.Distance(originalPos, targetPos);
         while (dist >= .1f)
