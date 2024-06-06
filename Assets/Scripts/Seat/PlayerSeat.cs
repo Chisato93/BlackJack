@@ -58,6 +58,8 @@ public class PlayerSeat : Seat
         Vector3 targetDir = (targetTransform - transform.localPosition).normalized;
         Vector3 targetPos = originalPos + targetDir;
 
+        // Helper.SmoothMove(시작, 도착, 속도) 함수로 구현 가능
+
         float dist = Vector3.Distance(originalPos, targetPos);
         while (dist >= .1f)
         {

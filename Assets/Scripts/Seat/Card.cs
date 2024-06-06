@@ -20,7 +20,6 @@ public class Card : MonoBehaviour
         int startIndex = gameObject.name.IndexOf(prefix) + prefix.Length;
         int lastIndex = gameObject.name.LastIndexOf(suffix) - startIndex;
         string shapeAndNumber = gameObject.name.Substring(startIndex, lastIndex);
-        Debug.Log(shapeAndNumber);
 
         string[] parts = new string[2];
         const int SHAPE = 0, NUMBER = 1;

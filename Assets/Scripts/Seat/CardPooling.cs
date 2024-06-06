@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 
 public class CardPooling : MonoBehaviour
@@ -8,77 +10,64 @@ public class CardPooling : MonoBehaviour
     List<Card> Card_Package = new List<Card>();
 
     public List<GameObject> cardList;
-    const int deckCount = 20;
+    const int minimumCardCount = 30;
 
     private void Awake()
     {
         CreateCardPackage();
 
         instance = this;
-
-        CreatePool();
     }
     const int packageCount = 3;
-    const int cardCount = 13;
-    const int cardShapeCount = 4;
     private void CreateCardPackage()
     {
-        for(int i = 0; i < packageCount; i++)
+        CardShuffle();
+
+        for (int i = 0; i < packageCount; i++)
         {
-            for (int j = 0; j < cardShapeCount; j++)
+            for(int j = 0; j < cardList.Count; j++)
             {
-                for (int k = 0; k < cardCount; k++)
-                {
-                    // 카드 모양 갯수 미리해서 3패키지를 만들까?
-                }
+                GameObject card = Instantiate(cardList[j], this.transform);
             }
         }
+
     }
 
-    private void CreatePool()
+    private void CardShuffle()
     {
-        for(int i = 0; i < deckCount; i++)
+        // 새로운 리스트를 만들어서 전부 섞은 다음 다시 넣는다.
+        List<GameObject> tempCardList = new List<GameObject>();
+        while(cardList.Count > 0)
         {
-            int randomCard = Random.Range(0, cardList.Count);
-            GameObject card = Instantiate(cardList[randomCard], this.transform);
+            int rand = Random.Range(0, cardList.Count);
+            tempCardList.Add(cardList[rand]);
+            cardList.RemoveAt(rand);
         }
+
+        cardList = tempCardList;
     }
 
-    public GameObject GetCard()
+    private GameObject GetCard()
     {
         const int topIndex = 0;
-
-        // 일단 null로 처리했는데 증설하는쪽이 좋아보임.
-        if (transform.childCount <= 0)
-        {
-            CreatePool();
-        }
 
         return transform.GetChild(topIndex).gameObject;
     }
 
     public void ReturnCard(GameObject card)
     {
-        card.transform.SetParent(this.transform, false);
+        card.transform.SetParent(this.transform, true);
     }
 
+    public void Phase(Transform sit, int phase)
+    {
+        GameObject card = GetCard() as GameObject;
+        card.transform.SetParent(sit);
 
+        const float dist = 0.04f;
+        Vector3 cardDistance = Vector3.zero + new Vector3(dist * phase, 0, 0);
 
-    //public GameObject temp;
-    //private void Update()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.Space))
-    //    {
-    //        GameObject card = GetCard();
-    //        card.transform.SetParent(temp.transform);
-    //    }
+        StartCoroutine(Helper.SmoothMove(this.transform.position, cardDistance, 0.2f));
+    }
 
-    //    if (Input.GetKeyDown(KeyCode.H))
-    //    {
-    //        if (temp.transform.childCount > 0)
-    //            ReturnCard(temp.transform.GetChild(0).gameObject);
-    //        else
-    //            Debug.Log("카드가 없습니다");
-    //    }
-    //}
 }

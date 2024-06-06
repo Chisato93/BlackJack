@@ -43,7 +43,7 @@ public class GameController : MonoBehaviour
                 StartCoroutine(BettingTurn());
                 break;
             case GameFlow.CARD_DISTRIBUTION:
-
+                StartCoroutine(CardDistribue());
                 break;
             case GameFlow.CHOICE:
                 break;
@@ -53,6 +53,23 @@ public class GameController : MonoBehaviour
                 break;
 
         }
+    }
+
+    const int first = 0, second = 1;
+
+    IEnumerator CardDistribue()
+    {
+        for(int i = 0; i < 2; i++)
+        {
+            Seats seatList = FindObjectOfType<Seats>();
+            foreach (PlayerSeat seat in seatList.seats)
+            {
+                CardPooling.instance.Phase(seat.transform, i);
+            }
+            CardPooling.instance.Phase(dealerSeat.transform, i);
+
+        }
+
     }
 
     private IEnumerator BettingTurn()
