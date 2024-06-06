@@ -49,17 +49,7 @@ public class JoinChip : MonoBehaviour
     public void Ready()
     {
         Vector3 targetPosition = transform.localPosition - new Vector3(0, 0.015f, 0);
-        StartCoroutine(SmoothMove(targetPosition));
+        StartCoroutine(Helper.SmoothMove(this.transform.localPosition, targetPosition, lerp_Speed));
     }
 
-    IEnumerator SmoothMove(Vector3 target)
-    {
-        while (Vector3.Distance(transform.localPosition, target) > 0.001f)
-        {
-            transform.localPosition = Vector3.Lerp(transform.localPosition, target, lerp_Speed * Time.deltaTime);
-            yield return null;
-        }
-
-        transform.localPosition = target;
-    }
 }
