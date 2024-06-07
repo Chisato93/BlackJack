@@ -55,8 +55,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    const int first = 0, second = 1;
-
     IEnumerator CardDistribue()
     {
         for(int i = 0; i < 2; i++)
@@ -64,12 +62,12 @@ public class GameController : MonoBehaviour
             Seats seatList = FindObjectOfType<Seats>();
             foreach (PlayerSeat seat in seatList.seats)
             {
-                CardPooling.instance.Phase(seat.transform, i);
+                CardPooling.instance.Phase(seat.transform.GetChild(0), i);
             }
             CardPooling.instance.Phase(dealerSeat.transform, i);
-
+            yield return null;
         }
-
+        NextStep();
     }
 
     private IEnumerator BettingTurn()

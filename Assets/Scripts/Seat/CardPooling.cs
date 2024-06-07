@@ -59,15 +59,17 @@ public class CardPooling : MonoBehaviour
         card.transform.SetParent(this.transform, true);
     }
 
+    [SerializeField] float lerpSpeed;
     public void Phase(Transform sit, int phase)
     {
         GameObject card = GetCard() as GameObject;
         card.transform.SetParent(sit);
 
         const float dist = 0.04f;
-        Vector3 cardDistance = Vector3.zero + new Vector3(dist * phase, 0, 0);
-
-        StartCoroutine(Helper.SmoothMove(this.transform.position, cardDistance, 0.2f));
+        Vector3 cardDistance = new Vector3(dist * phase, 0, 0);
+        card.transform.localPosition = cardDistance;
+        card.transform.localRotation = Quaternion.identity;
+        StartCoroutine(Helper.SmoothMove(card.transform.localPosition, cardDistance, lerpSpeed));
     }
 
 }
