@@ -9,7 +9,7 @@ public class PlayerSeat : Seat
     public int Bet_Amount { get; set; }
 
     public List<GameObject> chips;
-    private float lerp_Speed = .05f;
+    private float lerp_Speed = 1f;
 
     public IEnumerator SetBettingAmount()
     {
@@ -52,23 +52,14 @@ public class PlayerSeat : Seat
         }
 
         GameObject chip = Instantiate(chips[index], this.transform);
-        
+         
+        // 딜러 자리 말고 그냥 현재 자리에서 오른쪽에 넣어야 카드가 보일듯
         Vector3 originalPos = chip.transform.localPosition;
-        Vector3 targetTransform = FindObjectOfType<DealerSeat>().transform.position;
-        Vector3 targetDir = (targetTransform - transform.localPosition).normalized;
-        Vector3 targetPos = originalPos + targetDir;
-
+        Vector3 targetDir = originalPos + new Vector3(.05f,0,0);
         // Helper.SmoothMove(시작, 도착, 속도) 함수로 구현 가능
 
-        float dist = Vector3.Distance(originalPos, targetPos);
-        while (dist >= .1f)
-        {
-            chip.transform.localPosition = Vector3.Lerp(originalPos, targetPos, lerp_Speed);
-            yield return null;
-        }
-
-        // Ensure chip is at the target position
-        chip.transform.localPosition = targetPos;
+        yield return StartCoroutine(Helper.SmoothMove(originalPos, targetDir, lerp_Speed));
+        
     }
 
 }
