@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,18 +12,25 @@ public class UIController : MonoBehaviour
     }
 
     public GameObject ReadyButton;
+    public GameObject BettingPanel;
+    public GameObject SelectActionPanel;
+    public TMP_Text bettingText;
+    public UnityEvent onBettingCompleted;
+    private PlayerSeat currentPlayerSeat;
+
+    public void TurnOnSelectActionPanel(bool isActive)
+    {
+        SelectActionPanel.SetActive(isActive);
+    }    
 
     public void TurnOnReadyButton(bool isActive)
     {
         ReadyButton.SetActive(isActive);
     }
 
-    public GameObject BettingPanel;
-    public UnityEvent onBettingCompleted;
-    private PlayerSeat currentPlayerSeat;
-
     public void TurnOnBettingPanel(bool isActive)
     {
+        if (isActive) bettingText.text = $"Seat : {currentPlayerSeat.gameObject.name.Substring(currentPlayerSeat.gameObject.name.Length-1)}\nChoose Betting Amount......";
         BettingPanel.SetActive(isActive);
     }
 

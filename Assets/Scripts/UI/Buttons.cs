@@ -4,11 +4,14 @@ public class Buttons : MonoBehaviour
 {
     public void SitDone()
     {
-        JoinChip[] seats = FindObjectsOfType<JoinChip>();
-        foreach (JoinChip seat in seats)
+        Seats seats = FindObjectOfType<Seats>();
+        if (!seats.AtLeastOneSeats()) return;
+
+        JoinChip[] joinChips = FindObjectsOfType<JoinChip>();
+        foreach (JoinChip joinChip in joinChips)
         {
-            seat.Ready();
-            seat.SetOutliner(false);
+            joinChip.Ready();
+            joinChip.SetOutliner(false);
         }
         UIController.instance.TurnOnReadyButton(false);
 

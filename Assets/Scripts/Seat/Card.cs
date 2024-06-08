@@ -31,6 +31,7 @@ public class Card : MonoBehaviour
 
         card_Shape = (CardShape)Enum.Parse(typeof(CardShape), parts[SHAPE].ToUpper());
         card_Number = int.Parse(parts[NUMBER]);
+        if (card_Number >= 10) card_Number = 10;
     }
 
     private void Start()

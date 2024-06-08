@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
-public class PlayerSeat : Seat
+public class PlayerSeat : Seat, I_SmoothMove
 {
     public bool isEmptySeat = true;
     public int Bet_Amount { get; set; }
@@ -11,9 +11,12 @@ public class PlayerSeat : Seat
     public List<GameObject> chips;
     private float lerp_Speed = 1f;
 
-    public IEnumerator SetBettingAmount()
+    public IEnumerator SetBettingAmount(float delay)
     {
         UIController.instance.SetPlayerSeat(this);
+
+        yield return new WaitForSeconds(delay);
+
         UIController.instance.TurnOnBettingPanel(true);
 
         bool bettingCompleted = false;
@@ -53,13 +56,21 @@ public class PlayerSeat : Seat
 
         GameObject chip = Instantiate(chips[index], this.transform);
          
-        // 딜러 자리 말고 그냥 현재 자리에서 오른쪽에 넣어야 카드가 보일듯
         Vector3 originalPos = chip.transform.localPosition;
         Vector3 targetDir = originalPos + new Vector3(.05f,0,0);
-        // Helper.SmoothMove(시작, 도착, 속도) 함수로 구현 가능
 
-        yield return StartCoroutine(Helper.SmoothMove(originalPos, targetDir, lerp_Speed));
+        yield return StartCoroutine(SmoothMove(originalPos, targetDir, lerp_Speed));
         
     }
 
+    public IEnumerator SmoothMove(Vector3 startPos, Vector3 target, float lerp_Speed)
+    {
+        while (Vector3.Distance(startPos, target) > 0.001f)
+        {
+            startPos = Vector3.Lerp(startPos, target, lerp_Speed * Time.deltaTime);
+            yield return null;
+        }
+
+        startPos = target;
+    }
 }
