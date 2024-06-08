@@ -36,3 +36,9 @@ public enum CardShape
     SPADE,
     DIAMOND,
 }
+
+public enum CamerasNumber
+{
+    CAM_NORMAL,
+    CAM_TABLE,
+}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TreeEditor;
 using UnityEngine;
 
-public class CardPooling : MonoBehaviour
+public class CardPooling : MonoBehaviour, I_SmoothMove
 {
     public static CardPooling instance;
 
@@ -69,7 +69,17 @@ public class CardPooling : MonoBehaviour
         Vector3 cardDistance = new Vector3(dist * phase, 0, 0);
         card.transform.localPosition = cardDistance;
         card.transform.localRotation = Quaternion.identity;
-        StartCoroutine(Helper.SmoothMove(card.transform.localPosition, cardDistance, lerpSpeed));
+        StartCoroutine(SmoothMove(card.transform.localPosition, cardDistance, lerpSpeed));
     }
 
+    public IEnumerator SmoothMove(Vector3 startPos, Vector3 target, float lerp_Speed)
+    {
+        while (Vector3.Distance(startPos, target) > 0.001f)
+        {
+            startPos = Vector3.Lerp(startPos, target, lerp_Speed * Time.deltaTime);
+            yield return null;
+        }
+
+        startPos = target;
+    }
 }
