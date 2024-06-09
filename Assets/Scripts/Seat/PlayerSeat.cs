@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerSeat : Seat, I_SmoothMove
 {
@@ -11,6 +10,11 @@ public class PlayerSeat : Seat, I_SmoothMove
     public List<GameObject> chips;
     private float lerp_Speed = 1f;
 
+    public void SetText(bool isempty)
+    {
+        sumText.text = isempty ? "O" : "X";
+        sumText.color = isempty ? Color.red : Color.green;
+    }
     public IEnumerator SetBettingAmount(float delay)
     {
         UIController.instance.SetPlayerSeat(this);

@@ -37,6 +37,7 @@ public class JoinChip : MonoBehaviour, I_SmoothMove
         if (GameController.instance.Flow == GameFlow.SELECT_SEAT)
         {
             seat.isEmptySeat = false;
+            seat.SetText(seat.isEmptySeat);
             SetOutliner(false);
         }
     }

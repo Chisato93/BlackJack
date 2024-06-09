@@ -1,18 +1,33 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Card : MonoBehaviour
 {
     CardShape card_Shape;
-    public int card_Number { get; private set; }
-    bool isSelected = false;
-    public bool IsPlayerCard { get; set; } = false;
+    public int cardRealNumber {  get; private set; }
+    public int card_Number { get; set; }
+    public bool isSelected = false;
 
     private void Awake()
     {
         InitCardInfo();
     }
-
+    public string GetCardShape()
+    {
+        switch (card_Shape)
+        {
+            case CardShape.CLUB:
+                return Helper.CLUB;
+            case CardShape.DIAMOND:
+                return Helper.DIAMOND;
+            case CardShape.HEART:
+                return Helper.HEART;
+            case CardShape.SPADE:
+                return Helper.SPADE;
+        }
+        return null;
+    }
     private void InitCardInfo()
     {
         const string prefix = "PlayingCards_";
@@ -31,17 +46,14 @@ public class Card : MonoBehaviour
 
         card_Shape = (CardShape)Enum.Parse(typeof(CardShape), parts[SHAPE].ToUpper());
         card_Number = int.Parse(parts[NUMBER]);
+        cardRealNumber = card_Number;
         if (card_Number >= 10) card_Number = 10;
     }
 
-    private void Start()
+    public bool IsAceCard()
     {
-        if(card_Number == 1 && isSelected && IsPlayerCard)
-            AceCard();
+        if (cardRealNumber == 1 && !isSelected) return true;
+        else return false;
     }
 
-    void AceCard()
-    {
-        // 1 or 11 선택해서 카드 값을 바꾼다.
-    }
 }

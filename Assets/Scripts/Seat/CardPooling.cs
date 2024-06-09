@@ -65,8 +65,9 @@ public class CardPooling : MonoBehaviour, I_SmoothMove
         GameObject card = GetCard() as GameObject;
         card.transform.SetParent(sit);
 
-        const float dist = 0.04f;
-        Vector3 cardDistance = new Vector3(dist * phase, 0, 0);
+        const float distX = 0.04f;
+        const float distY = 0.01f;
+        Vector3 cardDistance = new Vector3(distX * phase, distY*phase, 0);
         card.transform.localPosition = cardDistance;
         card.transform.localRotation = Quaternion.identity;
         StartCoroutine(SmoothMove(card.transform.localPosition, cardDistance, lerpSpeed));
