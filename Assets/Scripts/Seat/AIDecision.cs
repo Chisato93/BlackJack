@@ -15,14 +15,15 @@ public class AIDecision : MonoBehaviour
     {
         currentTurn = GameController.instance.Turn;
 
-        while(seat.Card_Sum < Helper.MAXSUM || seat.Card_Sum <= Helper.CONDITION)
+        if(seat.Card_Deck.Count >= Helper.MAXCARDCOUNT) yield break;
+
+        while(seat.Card_Sum <= Helper.CONDITION)
         {
             // 카드 추가 받기
             CardPooling.instance.Phase(transform.GetChild(0), currentTurn);
-            seat.UpdateSum(transform.GetChild(0).GetChild(currentTurn).GetComponent<Card>().card_Number);
+            seat.AddCard(transform.GetChild(0).GetChild(currentTurn).GetComponent<Card>());
             currentTurn++;
             yield return new WaitForSeconds(delay);
         }
-        //Debug.Log($"Name : {seat.gameObject.name} / Sum : {seat.Card_Sum}");
     }
 }

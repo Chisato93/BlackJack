@@ -5,7 +5,6 @@ public enum GameFlow
     CARD_DISTRIBUTION,
     CHOICE,
     CARD_COMPARE,
-    PRIZE,
     TOTAL,
 }
 

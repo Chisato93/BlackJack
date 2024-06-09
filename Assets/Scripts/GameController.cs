@@ -32,8 +32,18 @@ public class GameController : MonoBehaviour
     {
         Turn = 0;
         seatList = FindObjectOfType<Seats>();
+        foreach (PlayerSeat seat in seatList.seats)
+        {
+            while (seat.transform.GetChild(0).childCount > 0)
+                CardPooling.instance.ReturnCard(seat.transform.GetChild(0).GetChild(0).gameObject);
+            seat.InitCardDeck();
+            seat.SetText(seat.isEmptySeat);
+        }
         Flow = GameFlow.SELECT_SEAT;
         dealerSeat.SetActiveDummyCard(true);
+        dealerSeat.InitCardDeck();
+        while (dealerSeat.transform.GetChild(0).childCount > 0)
+            CardPooling.instance.ReturnCard(dealerSeat.transform.GetChild(0).GetChild(0).gameObject);
         UIController.instance.TurnOnReadyButton(true);
         CameraChange((int)CamerasNumber.CAM_NORMAL);
     }
@@ -41,11 +51,13 @@ public class GameController : MonoBehaviour
     public void NextStep()
     {
         Flow++;
+        int flow = (int)Flow % (int)GameFlow.TOTAL;
+        Flow = (GameFlow)flow;
 
         // 임시로 보여주기 위해서
         GameManager.instance.NextTurn();
-        
-        switch(Flow)
+
+        switch (Flow)
         {
             case GameFlow.SELECT_SEAT:
                 Init();
@@ -61,10 +73,36 @@ public class GameController : MonoBehaviour
                 StartCoroutine(TakeOrPass());
                 break;
             case GameFlow.CARD_COMPARE:
+                Compare();
                 break;
-            case GameFlow.PRIZE:
+            case GameFlow.TOTAL:
+                NextStep();
                 break;
+        }
+    }
 
+    private void Compare()
+    {
+        Flow = GameFlow.CARD_COMPARE;
+        int dealerSum = dealerSeat.Card_Sum;
+        if (dealerSum == 21) NextStep();
+        else
+        {
+            foreach (PlayerSeat seat in seatList.seats)
+            {
+                if (!seat.isBust && !seat.isEmptySeat)
+                {
+                    if (seat.Card_Sum > dealerSum)
+                    {
+                        if (seat.isBlackJack()) GameManager.instance.Gold += (int)(seat.Bet_Amount * WinRate.BLACKJACK);
+                        GameManager.instance.Gold += (int)(seat.Bet_Amount * WinRate.NORMALWIN);
+                    }
+                    else
+                    {
+                        NextStep();
+                    }
+                }
+            }
         }
     }
 
@@ -88,36 +126,52 @@ public class GameController : MonoBehaviour
 
     private IEnumerator TakeOrPass()
     {
-        foreach (PlayerSeat seat in seatList.seats)
+        if (dealerSeat.isBlackJack()) Compare();
+        else
         {
-            if (seat.isEmptySeat)
+            foreach (PlayerSeat seat in seatList.seats)
             {
-               yield return StartCoroutine(seat.GetComponent<AIDecision>().Decision(delayTime));
+                if (seat.isBlackJack()) continue;
+
+                if (seat.isEmptySeat)
+                {
+                    yield return StartCoroutine(seat.GetComponent<AIDecision>().Decision(delayTime));
+                }
+                if (!seat.isEmptySeat)
+                {
+                    if (!seat.HaveAceCard().isSelected)
+                        UIController.instance.TurnOnSelectAceCardPanel(true, seat.HaveAceCard());
+                    bool turnFinished = false;
+                    UIController.instance.SetPlayerSeat(seat);
+                    UIController.instance.TurnOnSelectActionPanel(true);
+                    UIController.instance.onTurnFinished.AddListener(() => turnFinished = true);
+                    yield return new WaitUntil(() => turnFinished);
+                }
             }
-            if (!seat.isEmptySeat)
-            {
-                UIController.instance.TurnOnSelectActionPanel(true);
-                yield return null;
-            }
+            if (!dealerSeat.isBlackJack())
+                yield return StartCoroutine(dealerSeat.GetComponent<AIDecision>().Decision(delayTime));
+
+            NextStep();
         }
-        yield return StartCoroutine(dealerSeat.GetComponent<AIDecision>().Decision(delayTime));
     }
 
     IEnumerator CardDistribue()
     {
-        while(Turn < 2)
+        while (Turn < 2)
         {
             foreach (PlayerSeat seat in seatList.seats)
             {
                 CardPooling.instance.Phase(seat.transform.GetChild(0), Turn);
-                seat.UpdateSum(seat.transform.GetChild(0).GetChild(Turn).GetComponent<Card>().card_Number);
+                seat.AddCard(seat.transform.GetChild(0).GetChild(Turn).GetComponent<Card>());
                 yield return new WaitForSeconds(delayTime);
             }
             CardPooling.instance.Phase(dealerSeat.transform.GetChild(0), Turn);
-            dealerSeat.UpdateSum(dealerSeat.transform.GetChild(0).GetChild(Turn).GetComponent<Card>().card_Number);
+            dealerSeat.AddCard(dealerSeat.transform.GetChild(0).GetChild(Turn).GetComponent<Card>());
             Turn++;
             yield return new WaitForSeconds(delayTime);
         }
+
+
         NextStep();
     }
 

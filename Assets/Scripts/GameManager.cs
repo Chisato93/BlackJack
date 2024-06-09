@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    public int Gold { get; set; }
+
     #region 임시테스트
     public List<GameObject> Flows;
 
