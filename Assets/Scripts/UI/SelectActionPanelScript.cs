@@ -36,6 +36,19 @@ public class SelectActionPanelScript : MonoBehaviour
         }
 
         SeatScore.text = $"Sum : {UIController.instance.GetCurrentPlayerSeat().Card_Sum}";
+    }public void SetImgBundle(bool isAce)
+    {
+        if(isAce)
+        {
+            List<Card> currentCard = UIController.instance.GetCurrentPlayerSeat().Card_Deck;
+            for (int i = 0; i < currentCard.Count; i++)
+            {
+                string cardInfo = GetCardInfo(currentCard[i]);
+                cardImgs[i].sprite = Resources.Load<Sprite>("PlayingCards/" + cardInfo);
+            }
+
+            SeatScore.text = $"Sum : {UIController.instance.GetCurrentPlayerSeat().Card_Sum}";
+        }
     }
     public void SetImgBundle(int phase, Card card)
     {
@@ -70,13 +83,12 @@ public class SelectActionPanelScript : MonoBehaviour
     {
         PlayerSeat currentSeat = UIController.instance.GetCurrentPlayerSeat();
 
-        if (currentSeat.Card_Deck.Count >= Helper.MAXCARDCOUNT) TurnFinish();
 
         currentTurn = currentSeat.Card_Deck.Count;
         Transform cur = currentSeat.transform.GetChild(0);
         CardPooling.instance.Phase(cur, currentTurn);
         currentSeat.AddCard(cur.GetChild(currentTurn).GetComponent<Card>());
-        if(currentSeat.HaveAceCard() != null && currentSeat.Card_Sum > Helper.MAXSUM)
+        if(currentSeat.HaveAceCard() != null && currentSeat.Card_Sum > Helper.MAXSUM) // 여기에 한번만 되게 만들어줘야함)
         {
             currentSeat.HaveAceCard().card_Number = Helper.ACEONE;
             currentSeat.Card_Sum -= Helper.ACEELEVEN + Helper.ACEONE;
@@ -85,7 +97,7 @@ public class SelectActionPanelScript : MonoBehaviour
             UIController.instance.TurnOnSelectAceCardPanel(true, cur.GetChild(currentTurn).GetComponent<Card>());
         SetImgBundle(currentTurn, cur.GetChild(currentTurn).GetComponent<Card>());
 
-        if (currentSeat.Card_Sum == Helper.MAXSUM) TurnFinish();
+        if (currentSeat.Card_Sum == Helper.MAXSUM || currentSeat.Card_Deck.Count >= Helper.MAXCARDCOUNT) TurnFinish();
         if (IsBust(currentSeat.Card_Sum))
         {
             currentSeat.isBust = true;
