@@ -139,7 +139,7 @@ public class GameController : MonoBehaviour
                 }
                 if (!seat.isEmptySeat)
                 {
-                    if (!seat.HaveAceCard().isSelected)
+                    if (seat.HaveAceCard() != null && !seat.HaveAceCard().isSelected)
                         UIController.instance.TurnOnSelectAceCardPanel(true, seat.HaveAceCard());
                     bool turnFinished = false;
                     UIController.instance.SetPlayerSeat(seat);
