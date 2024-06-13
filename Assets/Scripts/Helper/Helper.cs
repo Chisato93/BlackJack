@@ -9,6 +9,9 @@ public class Helper
     public const int SECONDCARD = 1;
     public const int MAXCARDCOUNT = 5;
 
+    public const int BuyGold = 800;
+    public const int BuyHeart = 1200;
+
     public const string BUST = "Busted";
     public const string BLACKJACK = "Black Jack";
 
@@ -24,3 +27,4 @@ public class WinRate
     public const float BLACKJACK = 2.5f;
     public const float NORMALWIN = 1.9f;
 }
+

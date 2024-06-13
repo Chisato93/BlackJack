@@ -19,9 +19,4 @@ public class Deck : MonoBehaviour
         decks[rnd].SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -8,6 +8,10 @@ using UnityEngine.UI;
 
 public class SelectActionPanelScript : MonoBehaviour
 {
+    public Action Refresh;
+
+    public List<Button> buttons;
+    const int HitBtn = 0, StayBtn = 1, DoubleDownBtn = 2;
     public Button splitBtn;
     public TMP_Text SeatNumber;
     public TMP_Text SeatScore;
@@ -17,6 +21,24 @@ public class SelectActionPanelScript : MonoBehaviour
 
     public List<Image> cardImgs;
     public Transform cardImgBundle;
+
+    private void Start()
+    { 
+        Refresh += SetImgBundle;
+    }
+
+    private void OnEnable()
+    {
+        ButtonOnOff(true);
+    }
+
+    private void ButtonOnOff(bool isActive)
+    {
+        foreach(Button button in buttons)
+        {
+            button.interactable = isActive;
+        }
+    }
 
     private string GetCardInfo(Card card)
     {
@@ -83,34 +105,55 @@ public class SelectActionPanelScript : MonoBehaviour
     {
         PlayerSeat currentSeat = UIController.instance.GetCurrentPlayerSeat();
 
-
         currentTurn = currentSeat.Card_Deck.Count;
         Transform cur = currentSeat.transform.GetChild(0);
         CardPooling.instance.Phase(cur, currentTurn);
         currentSeat.AddCard(cur.GetChild(currentTurn).GetComponent<Card>());
-        if(currentSeat.HaveAceCard() != null && currentSeat.Card_Sum > Helper.MAXSUM) // 여기에 한번만 되게 만들어줘야함)
+
+        if (currentSeat.HaveAceCard() != null && currentSeat.HaveAceCard().card_Number == Helper.ACEELEVEN && currentSeat.Card_Sum > Helper.MAXSUM)
         {
             currentSeat.HaveAceCard().card_Number = Helper.ACEONE;
-            currentSeat.Card_Sum -= Helper.ACEELEVEN + Helper.ACEONE;
+            currentSeat.Card_Sum -= Helper.ACEELEVEN - currentSeat.HaveAceCard().card_Number;
         }
+
         if (cur.GetChild(currentTurn).GetComponent<Card>().IsAceCard() && (currentSeat.Card_Sum + Helper.ACEELEVEN <= Helper.MAXSUM))
             UIController.instance.TurnOnSelectAceCardPanel(true, cur.GetChild(currentTurn).GetComponent<Card>());
+
         SetImgBundle(currentTurn, cur.GetChild(currentTurn).GetComponent<Card>());
 
-        if (currentSeat.Card_Sum == Helper.MAXSUM || currentSeat.Card_Deck.Count >= Helper.MAXCARDCOUNT) TurnFinish();
-        if (IsBust(currentSeat.Card_Sum))
+        StartCoroutine(HandleEndOfTurn(currentSeat));
+    }
+
+    private IEnumerator HandleEndOfTurn(PlayerSeat currentSeat)
+    {
+        if (currentSeat.Card_Sum == Helper.MAXSUM)
+        {
+            yield return StartCoroutine(ShowNoticePanel(Helper.BLACKJACK));
+        }
+        else if (currentSeat.Card_Deck.Count >= Helper.MAXCARDCOUNT)
+        {
+            if (IsBust(currentSeat.Card_Sum))
+            {
+                currentSeat.isBust = true;
+                yield return StartCoroutine(ShowNoticePanel(Helper.BUST));
+            }
+            else
+            {
+                TurnFinish();
+            }
+        }
+        else if (IsBust(currentSeat.Card_Sum))
         {
             currentSeat.isBust = true;
-            StartCoroutine(ShowBustPanel());
+            yield return StartCoroutine(ShowNoticePanel(Helper.BUST));
         }
     }
 
-    private IEnumerator ShowBustPanel()
+
+    private IEnumerator ShowNoticePanel(string txt)
     {
-        UIController.instance.bustPanel.SetActive(true);
-        yield return new WaitForSeconds(0.5f);
-        UIController.instance.bustPanel.SetActive(false);
-        yield return null;
+        ButtonOnOff(false);
+        yield return StartCoroutine(UIController.instance.SetNoticePanel(txt));
         TurnFinish();
     }
 
@@ -126,6 +169,7 @@ public class SelectActionPanelScript : MonoBehaviour
         Transform cur = currentSeat.transform.GetChild(0);
         CardPooling.instance.Phase(cur, currentTurn);
         cur.GetChild(currentTurn).transform.rotation = Quaternion.Euler(flip);
+        currentSeat.haveDoubleDownCard = true;
         currentSeat.AddCard(cur.GetChild(currentTurn).GetComponent<Card>(), true);
         SetImgBundle(currentTurn, cur.GetChild(currentTurn).GetComponent<Card>(), true);
         TurnFinish();
@@ -147,6 +191,7 @@ public class SelectActionPanelScript : MonoBehaviour
 
     private void TurnFinish()
     {
+        ButtonOnOff(false);
         UIController.instance.onTurnFinished?.Invoke();
         UIController.instance.TurnOnSelectActionPanel(false);
     }

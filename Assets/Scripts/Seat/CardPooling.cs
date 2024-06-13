@@ -57,6 +57,8 @@ public class CardPooling : MonoBehaviour, I_SmoothMove
     public void ReturnCard(GameObject card)
     {
         card.transform.SetParent(this.transform, true);
+        card.transform.position = this.transform.position;
+        card.transform.rotation = Quaternion.identity;
     }
 
     [SerializeField] float lerpSpeed;

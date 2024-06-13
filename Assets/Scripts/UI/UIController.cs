@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -16,11 +17,54 @@ public class UIController : MonoBehaviour
     public GameObject BettingPanel;
     public GameObject SelectActionPanel;
     public GameObject SelectAceCard;
-    public GameObject bustPanel;
+    public GameObject NoticePanel;
+    public GameObject ResultPanel;
+    public GameObject CurrentPanel;
     public TMP_Text bettingText;
+    public TMP_Text resultText;
+    public TMP_Text heartText;
+    public TMP_Text goldText;
     public UnityEvent onBettingCompleted;
     public UnityEvent onTurnFinished;
     private PlayerSeat currentPlayerSeat;
+    private string r_text = "";
+
+    public void OpenCurrencyPanel()
+    {
+        CurrentPanel.SetActive(true);
+        heartText.text = GameManager.instance.Heart.ToString();
+        goldText.text = GameManager.instance.Gold.ToString();
+    }
+    public void SetText(string text)
+    {
+        r_text += text;
+    }
+
+    public void ShowResultPanel()
+    {
+        ResultPanel.SetActive(true);
+        Debug.Log(r_text);
+        resultText.text = r_text;
+    }
+
+    public void CloseReusltPanel()
+    {
+        r_text = "";
+        resultText.text = r_text;
+        ResultPanel.SetActive(false);
+        GameController.instance.NextStep();
+        
+    }
+
+    public IEnumerator SetNoticePanel(string text)
+    {
+        NoticePanel.SetActive(true);
+        NoticePanel.GetComponentInChildren<TMP_Text>().text = text;
+        yield return new WaitForSeconds(0.5f);
+        NoticePanel.GetComponentInChildren<TMP_Text>().text = "";
+        NoticePanel.SetActive(false);
+        yield return null;
+    }
 
     public void TurnOnSelectAceCardPanel(bool isActive, Card card)
     {
