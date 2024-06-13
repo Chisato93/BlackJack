@@ -8,7 +8,7 @@ public class SelectAceCard : MonoBehaviour
     {
         currentAceCard.card_Number = Helper.ACEONE;
         SelectActionPanelScript action = FindObjectOfType<SelectActionPanelScript>();
-        action.SetImgBundle(true);
+        action.Refresh?.Invoke();
         currentAceCard.isSelected = true;
         UIController.instance.TurnOnSelectAceCardPanel(false, null);
     }
@@ -16,8 +16,8 @@ public class SelectAceCard : MonoBehaviour
     {
         currentAceCard.card_Number = Helper.ACEELEVEN;
         SelectActionPanelScript action = FindObjectOfType<SelectActionPanelScript>();
-        action.SetImgBundle(true);
-        UIController.instance.GetCurrentPlayerSeat().Card_Sum += Helper.ACEELEVEN;
+        UIController.instance.GetCurrentPlayerSeat().Card_Sum += currentAceCard.card_Number - Helper.ACEONE;
+        action.Refresh?.Invoke();
         currentAceCard.isSelected = true;
         UIController.instance.TurnOnSelectAceCardPanel(false, null);
     }

@@ -2,7 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class JoinChip : MonoBehaviour, I_SmoothMove
+public class JoinChip : MonoBehaviour
 {
     Outline outline;
     PlayerSeat seat;
@@ -16,8 +16,9 @@ public class JoinChip : MonoBehaviour, I_SmoothMove
         Init();
     }
 
-    private void Init()
+    public void Init()
     {
+        gameObject.SetActive(true);
         SetOutliner(true);
         transform.localPosition = Vector3.zero;
     }
@@ -49,18 +50,7 @@ public class JoinChip : MonoBehaviour, I_SmoothMove
 
     public void Ready()
     {
-        Vector3 targetPosition = transform.localPosition - new Vector3(0, 0.015f, 0);
-        StartCoroutine(SmoothMove(this.transform.localPosition, targetPosition, lerp_Speed));
+        this.gameObject.SetActive(false);
     }
 
-    public IEnumerator SmoothMove(Vector3 startPos, Vector3 target, float lerp_Speed)
-    {
-        while (Vector3.Distance(startPos, target) > 0.001f)
-        {
-            startPos = Vector3.Lerp(startPos, target, lerp_Speed * Time.deltaTime);
-            yield return null;
-        }
-
-        startPos = target;
-    }
 }

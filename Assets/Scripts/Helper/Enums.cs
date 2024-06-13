@@ -1,11 +1,12 @@
 public enum GameFlow
 {
+    BUYGOLD,
     SELECT_SEAT,
     BETTING,
     CARD_DISTRIBUTION,
     CHOICE,
     CARD_COMPARE,
-    TOTAL,
+    NONE,
 }
 
 public enum GameResult

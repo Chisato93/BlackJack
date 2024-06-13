@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerSeat : Seat, I_SmoothMove
+public class PlayerSeat : Seat
 {
     public bool isEmptySeat = true;
     public int Bet_Amount { get; set; }
 
     public List<GameObject> chips;
-    private float lerp_Speed = 1f;
+    public bool haveDoubleDownCard = false;
 
     public void SetText(bool isempty)
     {
@@ -30,51 +30,44 @@ public class PlayerSeat : Seat, I_SmoothMove
 
         UIController.instance.TurnOnBettingPanel(false);
 
-        StartCoroutine(BettingAnimation());
+        BettingAnimation();
     }
 
-    IEnumerator BettingAnimation()
+    void BettingAnimation()
     {
         int index = 0;
         switch (Bet_Amount)
         {
-            case 1:
+            case 10:
                 index = 0;
                 break;
-            case 5:
+            case 20:
                 index = 1;
                 break;
-            case 10:
+            case 30:
                 index = 2;
                 break;
-            case 50:
+            case 40:
                 index = 3;
                 break;
-            case 100:
+            case 50:
                 index = 4;
                 break;
-            case 500:
+            case 60:
                 index = 5;
                 break;
         }
 
         GameObject chip = Instantiate(chips[index], this.transform);
-         
-        Vector3 originalPos = chip.transform.localPosition;
-        Vector3 targetDir = originalPos + new Vector3(.05f,0,0);
-
-        yield return StartCoroutine(SmoothMove(originalPos, targetDir, lerp_Speed));
+        chip.name = "Chip";
+        chip.transform.localPosition += chip.transform.localPosition;
         
     }
 
-    public IEnumerator SmoothMove(Vector3 startPos, Vector3 target, float lerp_Speed)
+    public void DestroyChip()
     {
-        while (Vector3.Distance(startPos, target) > 0.001f)
-        {
-            startPos = Vector3.Lerp(startPos, target, lerp_Speed * Time.deltaTime);
-            yield return null;
-        }
-
-        startPos = target;
+        if(this.transform.Find("Chip"))
+            Destroy(this.transform.Find("Chip").gameObject);
     }
+
 }
