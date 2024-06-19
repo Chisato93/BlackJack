@@ -22,13 +22,15 @@ public class GameManager : MonoBehaviour
     public int Heart { get; set; } = 5;
     public int Gold { get; set; } = 100;
 
-    void ChangeHeartToGold()
+    public void ChangeHeartToGold()
     {
+        if (Heart - 1 < 0) return;
         Heart--;
         Gold += Helper.BuyGold;
     }
-    void ChangeGoldToHeart()
+    public void ChangeGoldToHeart()
     {
+        if(Gold  - 1 < 0) return;
         Gold -= Helper.BuyHeart;
         Heart++;
     }
@@ -43,7 +45,7 @@ public class GameManager : MonoBehaviour
     {
         if(Heart < 0 && Gold <= 0)
         {
-            GameController.instance.Flow = GameFlow.NONE;
+            GameController.instance.Flow = GameFlow.LAST_TURN;
             Time.timeScale = 0;
             Debug.Log("Die");
             return true;
@@ -56,7 +58,7 @@ public class GameManager : MonoBehaviour
     {
         if(Heart >= 100)
         {
-            GameController.instance.Flow = GameFlow.NONE;
+            GameController.instance.Flow = GameFlow.LAST_TURN;
             Time.timeScale = 0;
             Debug.Log("Win");
             return true;
@@ -71,12 +73,12 @@ public class GameManager : MonoBehaviour
 
     public void NextTurn()
     {
-        int overFlowCheck = (int)GameController.instance.Flow % (int)GameFlow.NONE;
+        int overFlowCheck = (int)GameController.instance.Flow % (int)GameFlow.LAST_TURN;
         GameController.instance.Flow = (GameFlow)(overFlowCheck);
 
         if (overFlowCheck - 1 < 0)
         {
-            Flows[overFlowCheck + (int)GameFlow.NONE - 1].gameObject.SetActive(false);
+            Flows[overFlowCheck + (int)GameFlow.LAST_TURN - 1].gameObject.SetActive(false);
             Flows[overFlowCheck].gameObject.SetActive(true);
         }
         else

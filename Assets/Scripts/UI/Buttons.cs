@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public class Buttons : MonoBehaviour
@@ -21,10 +22,28 @@ public class Buttons : MonoBehaviour
     public void ChooseBettingAmount(int amount)
     {
         PlayerSeat currentPlayerSeat = UIController.instance.GetCurrentPlayerSeat();
-        if (currentPlayerSeat != null)
+        if (currentPlayerSeat != null && GameManager.instance.Gold >= amount)
         {
             currentPlayerSeat.Bet_Amount = amount;
+            GameManager.instance.Gold -= amount;
+            UIController.instance.SetExchange();
             UIController.instance.onBettingCompleted?.Invoke(); // 베팅 완료 이벤트 호출
         }
+    }
+
+    public void ExChangeHeartToGold()
+    {
+        GameManager.instance.ChangeHeartToGold();
+        UIController.instance.SetExchange();
+    }
+    public void ExChangeGoldToHeart()
+    {
+        GameManager.instance.ChangeGoldToHeart();
+        UIController.instance.SetExchange();
+    }
+
+    public void CloseExchange()
+    {
+        UIController.instance.CloseExchangePanel();
     }
 }

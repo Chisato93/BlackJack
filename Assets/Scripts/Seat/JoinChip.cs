@@ -35,8 +35,11 @@ public class JoinChip : MonoBehaviour
     }
     private void OnMouseDown()
     {
+        Debug.Log(gameObject.name);
         if (GameController.instance.Flow == GameFlow.SELECT_SEAT)
         {
+            GameManager.instance.Gold -= 10;
+            UIController.instance.SetExchange();
             seat.isEmptySeat = false;
             seat.SetText(seat.isEmptySeat);
             SetOutliner(false);
