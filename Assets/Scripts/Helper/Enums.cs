@@ -6,7 +6,7 @@ public enum GameFlow
     CARD_DISTRIBUTION,
     CHOICE,
     CARD_COMPARE,
-    NONE,
+    LAST_TURN,
 }
 
 public enum GameResult

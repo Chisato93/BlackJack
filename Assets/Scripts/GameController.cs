@@ -32,8 +32,17 @@ public class GameController : MonoBehaviour
         camController = Camera.main.GetComponent<CameraController>();
         joinChips = FindObjectsOfType<JoinChip>();
         dealerSeat = FindObjectOfType<DealerSeat>();
+
         Init();
+
+        GameFlow();
     }
+
+    private void Update()
+    {
+        Debug.Log(Flow);
+    }
+
     private void Init()
     {
         Turn = 0;
@@ -58,61 +67,79 @@ public class GameController : MonoBehaviour
         }
         UIController.instance.TurnOnReadyButton(true);
         CameraChange((int)CamerasNumber.CAM_NORMAL);
+
     }
 
     public void NextStep()
     {
         Flow++;
-        int flow = (int)Flow % (int)GameFlow.NONE;
+        int flow = (int)Flow % (int)global::GameFlow.LAST_TURN;
         Flow = (GameFlow)flow;
         Debug.Log(Flow);
 
         // 임시로 보여주기 위해서
         GameManager.instance.NextTurn();
+        GameFlow();
+    }
 
+    private void GameFlow()
+    {
         switch (Flow)
         {
-            case GameFlow.BUYGOLD:
-                if (GameManager.instance.GameOver() || GameManager.instance.GameWin()) return;
-                else
-                {
-                    if(GameManager.instance.EnughtGold()) NextStep();
-                    else
-                    {
-                        UIController.instance.OpenCurrencyPanel();
-                    }
-                }
+            case global::GameFlow.BUYGOLD:
+                ExchangeTurn();
                 break;
-            case GameFlow.SELECT_SEAT:
+            case global::GameFlow.SELECT_SEAT:
                 Init();
                 break;
-            case GameFlow.BETTING:
+            case global::GameFlow.BETTING:
                 SelectSeatComplete();
                 StartCoroutine(BettingTurn());
                 break;
-            case GameFlow.CARD_DISTRIBUTION:
+            case global::GameFlow.CARD_DISTRIBUTION:
                 StartCoroutine(CardDistribue());
                 break;
-            case GameFlow.CHOICE:
+            case global::GameFlow.CHOICE:
                 StartCoroutine(TakeOrPass());
                 break;
-            case GameFlow.CARD_COMPARE:
+            case global::GameFlow.CARD_COMPARE:
                 StartCoroutine(Compare());
+                break;
+            case global::GameFlow.LAST_TURN:
+                UIController.instance.ShowResultPanel();
+                UIController.instance.OpenCurrencyPanel();
                 break;
         }
     }
-    
+
+    private void ExchangeTurn()
+    {
+        if (GameManager.instance.GameOver() || GameManager.instance.GameWin()) return;
+        else
+        {
+            if (GameManager.instance.EnughtGold())
+            {
+                NextStep();
+            }
+            else
+            {
+                UIController.instance.OpenExchangePanel();
+            }
+        }
+    }
+
     private IEnumerator Compare()
     {
-        if(Flow != GameFlow.CARD_COMPARE)
-            Flow = GameFlow.CARD_COMPARE;
+        if(Flow != global::GameFlow.CARD_COMPARE)
+            Flow = global::GameFlow.CARD_COMPARE;
         foreach(PlayerSeat seat in seatList.seats)
         {
-            seat.haveDoubleDownCard = true;
-            seat.Card_Deck[seat.Card_Deck.Count - 1].transform.rotation = Quaternion.Euler(Vector3.zero);
-            seat.sumText.text = seat.Card_Sum.ToString();
+            if(!seat.isEmptySeat && seat.haveDoubleDownCard)
+            {
+                seat.Card_Deck[seat.Card_Deck.Count - 1].transform.rotation = Quaternion.Euler(Vector3.zero);
+                seat.sumText.text = seat.Card_Sum.ToString();
+            }
         }
-        yield return null;
         int dealerSum = dealerSeat.Card_Sum;
         if (dealerSum == Helper.MAXSUM)
         {
@@ -120,7 +147,7 @@ public class GameController : MonoBehaviour
             {
                 if (!seat.isEmptySeat)
                 {
-                    if(seat.Card_Sum == 21)
+                    if(seat.Card_Sum == Helper.MAXSUM)
                     {
                         UIController.instance.SetText($" Player {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Draw\n");
                     }
@@ -139,8 +166,6 @@ public class GameController : MonoBehaviour
                 {
                     if (!seat.isBust)
                         UIController.instance.SetText($" Player  {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Win\n");
-                    else
-                        ;
                 }
             }
         }
@@ -162,7 +187,8 @@ public class GameController : MonoBehaviour
             }
         }
 
-        UIController.instance.ShowResultPanel();
+        yield return null;
+        NextStep();
     }
 
     private void SelectSeatComplete()
@@ -253,6 +279,7 @@ public class GameController : MonoBehaviour
             }
         }
         yield return new WaitForSeconds(delayTime);
+        UIController.instance.CloseCurrencyPanel();
         NextStep();
     }
 }

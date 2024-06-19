@@ -20,20 +20,43 @@ public class UIController : MonoBehaviour
     public GameObject NoticePanel;
     public GameObject ResultPanel;
     public GameObject CurrentPanel;
+    public GameObject ExchangePanel;
     public TMP_Text bettingText;
     public TMP_Text resultText;
     public TMP_Text heartText;
     public TMP_Text goldText;
+    public TMP_Text ex_heartText;
+    public TMP_Text ex_goldText;
     public UnityEvent onBettingCompleted;
     public UnityEvent onTurnFinished;
     private PlayerSeat currentPlayerSeat;
     private string r_text = "";
 
+    public void SetExchange()
+    {
+        heartText.text = "Herat : " + GameManager.instance.Heart.ToString();
+        goldText.text = "Gold : " + GameManager.instance.Gold.ToString();
+        ex_heartText.text = GameManager.instance.Heart.ToString();
+        ex_goldText.text = GameManager.instance.Gold.ToString();
+    }
+    public void OpenExchangePanel()
+    {
+        ExchangePanel.SetActive(true);
+        SetExchange();
+    }
     public void OpenCurrencyPanel()
     {
         CurrentPanel.SetActive(true);
-        heartText.text = GameManager.instance.Heart.ToString();
-        goldText.text = GameManager.instance.Gold.ToString();
+        SetExchange();
+    }
+    public void CloseExchangePanel()
+    {
+        ExchangePanel.SetActive(false);
+        GameController.instance.NextStep();
+    }
+    public void CloseCurrencyPanel()
+    {
+        CurrentPanel.SetActive(false);
     }
     public void SetText(string text)
     {
