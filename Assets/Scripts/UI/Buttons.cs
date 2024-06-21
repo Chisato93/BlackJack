@@ -44,6 +44,12 @@ public class Buttons : MonoBehaviour
 
     public void CloseExchange()
     {
+        DataManager.instance.SaveDataFun();
         UIController.instance.CloseExchangePanel();
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }
