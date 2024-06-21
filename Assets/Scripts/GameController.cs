@@ -38,11 +38,6 @@ public class GameController : MonoBehaviour
         GameFlow();
     }
 
-    private void Update()
-    {
-        Debug.Log(Flow);
-    }
-
     private void Init()
     {
         Turn = 0;
@@ -73,12 +68,8 @@ public class GameController : MonoBehaviour
     public void NextStep()
     {
         Flow++;
-        int flow = (int)Flow % (int)global::GameFlow.LAST_TURN;
+        int flow = (int)Flow % ((int)global::GameFlow.LAST_TURN + 1);
         Flow = (GameFlow)flow;
-        Debug.Log(Flow);
-
-        // 임시로 보여주기 위해서
-        GameManager.instance.NextTurn();
         GameFlow();
     }
 
@@ -103,7 +94,7 @@ public class GameController : MonoBehaviour
                 StartCoroutine(TakeOrPass());
                 break;
             case global::GameFlow.CARD_COMPARE:
-                StartCoroutine(Compare());
+                Compare();
                 break;
             case global::GameFlow.LAST_TURN:
                 UIController.instance.ShowResultPanel();
@@ -128,7 +119,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private IEnumerator Compare()
+    private void Compare()
     {
         if(Flow != global::GameFlow.CARD_COMPARE)
             Flow = global::GameFlow.CARD_COMPARE;
@@ -141,6 +132,8 @@ public class GameController : MonoBehaviour
             }
         }
         int dealerSum = dealerSeat.Card_Sum;
+
+        // 딜러가 블랙잭일때
         if (dealerSum == Helper.MAXSUM)
         {
             foreach (PlayerSeat seat in seatList.seats)
@@ -158,6 +151,7 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+        // 딜러가 버스트일때
         else if(dealerSum > Helper.MAXSUM)
         {
             foreach (PlayerSeat seat in seatList.seats)
@@ -165,20 +159,51 @@ public class GameController : MonoBehaviour
                 if (!seat.isEmptySeat)
                 {
                     if (!seat.isBust)
-                        UIController.instance.SetText($" Player  {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Win\n");
+                    {
+                        if (seat.Card_Sum == Helper.MAXSUM)
+                        {
+                            UIController.instance.SetText($" Player  {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is BLACK JACK\n");
+                            GameManager.instance.Gold += (int)(seat.Bet_Amount * 2.9);
+                        }
+                        else if(seat.Card_Sum < Helper.MAXSUM)
+                        {
+                            UIController.instance.SetText($" Player  {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Win\n");
+                            GameManager.instance.Gold += (int)(seat.Bet_Amount * 1.9f);
+                        }
+                        else
+                            UIController.instance.SetText($" Player   {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Lose\n");
+                    }
                 }
             }
         }
+        // 딜러가 버스트나 블랙잭이 아닐때
         else
         {
             foreach (PlayerSeat seat in seatList.seats)
             {
-                if (!seat.isEmptySeat && !seat.isBust)
+                if (!seat.isEmptySeat)
                 {
-                    if(seat.Card_Sum == Helper.MAXSUM)
-                        UIController.instance.SetText($" Player  {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is BLACK JACK\n");
-                    if (seat.Card_Sum > dealerSum && seat.Card_Deck.Count == 5)
+                    if(seat.isBust)
+                    {
+                        UIController.instance.SetText($" Player   {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Lose\n");
+                        continue;
+                    }
+                    if(seat.Card_Deck.Count == 5 && seat.Card_Sum < Helper.MAXSUM)
+                    {
                         UIController.instance.SetText($" Player   {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Win\n");
+                        GameManager.instance.Gold += (int)(seat.Bet_Amount * 1.9f);
+                        continue;
+                    }
+                    if(seat.Card_Sum == Helper.MAXSUM)
+                    {
+                        UIController.instance.SetText($" Player  {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is BLACK JACK\n");
+                        GameManager.instance.Gold += (int)(seat.Bet_Amount * 2.9);
+                    }
+                    if (seat.Card_Sum > dealerSum /*&& seat.Card_Deck.Count == 5*/)
+                    {
+                        UIController.instance.SetText($" Player   {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Win\n");
+                        GameManager.instance.Gold += (int)(seat.Bet_Amount * 1.9f);
+                    }
                     else if (seat.Card_Sum == dealerSum)
                         UIController.instance.SetText($" Player   {seat.gameObject.name.Substring(seat.gameObject.name.Length - 1)} is Draw\n");
                     else
@@ -186,8 +211,8 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+        DataManager.instance.SaveDataFun();
 
-        yield return null;
         NextStep();
     }
 
@@ -271,15 +296,32 @@ public class GameController : MonoBehaviour
 
     private IEnumerator BettingTurn()
     {
+        int tempGold = 0;
         foreach (PlayerSeat seat in seatList.seats)
         {
-            if (!seat.isEmptySeat)
+            if (GameManager.instance.Gold < 10)
             {
-                yield return StartCoroutine(seat.SetBettingAmount(delayTime));
+                if(!seat.isEmptySeat)
+                {
+                    tempGold += 10;
+                    seat.isEmptySeat = true;
+                    seat.SetText(seat.isEmptySeat);
+                    seat.AddComponent<AIDecision>();
+                    continue;
+                }
+            }
+            else
+            {
+                if (!seat.isEmptySeat)
+                {
+                    yield return StartCoroutine(seat.SetBettingAmount(delayTime));
+                }
             }
         }
+        GameManager.instance.Gold += tempGold;
         yield return new WaitForSeconds(delayTime);
         UIController.instance.CloseCurrencyPanel();
+        DataManager.instance.SaveDataFun();
         NextStep();
     }
 }

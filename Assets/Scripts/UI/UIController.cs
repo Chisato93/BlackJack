@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data.SqlTypes;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -21,16 +22,40 @@ public class UIController : MonoBehaviour
     public GameObject ResultPanel;
     public GameObject CurrentPanel;
     public GameObject ExchangePanel;
+    public GameObject GameResultPanel;
     public TMP_Text bettingText;
     public TMP_Text resultText;
     public TMP_Text heartText;
     public TMP_Text goldText;
     public TMP_Text ex_heartText;
     public TMP_Text ex_goldText;
+    public TMP_Text gr_resultText;
+    public TMP_Text saveText;
     public UnityEvent onBettingCompleted;
     public UnityEvent onTurnFinished;
     private PlayerSeat currentPlayerSeat;
     private string r_text = "";
+
+    //public IEnumerator ShowSaveDataText()
+    //{
+    //    string txt = "Save";
+    //    for(int i = 0; i < 3; i ++)
+    //    {
+    //        saveText.text = txt;
+    //        txt += "..";
+    //        yield return null;
+    //    }
+
+    //    txt = "";
+    //    saveText.text = txt;
+    //}
+
+    public void OpenGameReuslt(bool win)
+    {
+        GameResultPanel.SetActive(true);
+        if (win) gr_resultText.text = "Finally!! You Can Escape there!! \n Game Clear !!";
+        else gr_resultText.text = "Sadly, You are Dead !! \n Game Over !!";
+    }
 
     public void SetExchange()
     {

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class Seat : MonoBehaviour
 {
     public Action action;
-    public List<Card> Card_Deck { get; set; } = new List<Card>(); // Initialize the list
+    public List<Card> Card_Deck { get; set; } = new List<Card>();
     public int Card_Sum { get; set; }
     public GameResult Result { get; set; }
     public TMP_Text sumText;
