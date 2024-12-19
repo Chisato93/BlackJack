@@ -55,3 +55,27 @@ fatal: Need to specify how to reconcile divergent branches.
 
 
 Completed with errors, see above.
+
+
+
+    git -c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks push -v origin Seperate/UI/CopyBookCode:Seperate/UI/CopyBookCode main:main
+POST git-receive-pack (chunked)
+error: RPC failed; HTTP 400 curl 22 The requested URL returned error: 400
+send-pack: unexpected disconnect while reading sideband packet
+fatal: the remote end hung up unexpectedly
+
+Pushing to https://github.com/Chisato93/Editor_fin.git
+To https://github.com/Chisato93/Editor_fin.git
+ ! [rejected]        main -> main (non-fast-forward)
+error: failed to push some refs to 'https://github.com/Chisato93/Editor_fin.git'
+
+
+
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. If you want to integrate the remote changes,
+hint: use 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+
+
+Completed with errors, see above.
